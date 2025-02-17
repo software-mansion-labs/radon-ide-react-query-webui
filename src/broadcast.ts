@@ -13,36 +13,31 @@ export function broadcastQueryClient(scope: string, queryClient) {
   const queryCache = queryClient.getQueryCache();
 
   queryClient.getQueryCache().subscribe((queryEvent) => {
-    console.log("QUERY EVENT", queryEvent);
-    //   if (transaction) {
-    //     return
-    //   }
+      if (transaction) {
+        return
+      }
 
-    //   const {
-    //     query: { queryHash, queryKey, state },
-    //   } = queryEvent
+      const {
+        query: { queryHash, queryKey, state },
+      } = queryEvent
 
-    //   if (queryEvent.type === 'updated' && queryEvent.action.type === 'success') {
-    //     channel.postMessage({
-    //       type: 'updated',
-    //       queryHash,
-    //       queryKey,
-    //       state,
-    //     })
-    //   }
+      if (queryEvent.type === 'updated' && queryEvent.action.type === 'success') {
+        proxy.sendMessage('updated', {
+          queryHash,
+          queryKey,
+          state,
+        })
+      }
 
-    //   if (queryEvent.type === 'removed') {
-    //     channel.postMessage({
-    //       type: 'removed',
-    //       queryHash,
-    //       queryKey,
-    //     })
-    //   }
+      if (queryEvent.type === 'removed') {
+        proxy.sendMessage('removed', {
+          queryHash,
+          queryKey,
+        })
+      }
   });
 
   proxy.addMessageListener("updated", (action) => {
-    console.log("QUERY EVENT updated",  action);
-
     tx(() => {
       const { queryHash, queryKey, state } = action;
 
@@ -64,9 +59,7 @@ export function broadcastQueryClient(scope: string, queryClient) {
     });
   });
 
-  proxy.addMessageListener("removed", (action) => {
-   console.log("QUERY EVENT removed",  action);
-    
+  proxy.addMessageListener("removed", (action) => {    
     tx(() => {
       const { queryHash } = action;
       const query = queryCache.get(queryHash);
@@ -76,38 +69,4 @@ export function broadcastQueryClient(scope: string, queryClient) {
       }
     });
   });
-
-//   channel.onmessage = (action) => {
-//     if (!action?.type) {
-//       return;
-//     }
-
-//     tx(() => {
-//       const { type, queryHash, queryKey, state } = action;
-
-//       if (type === "updated") {
-//         const query = queryCache.get(queryHash);
-
-//         if (query) {
-//           query.setState(state);
-//           return;
-//         }
-
-//         queryCache.build(
-//           queryClient,
-//           {
-//             queryKey,
-//             queryHash,
-//           },
-//           state
-//         );
-//       } else if (type === "removed") {
-//         const query = queryCache.get(queryHash);
-
-//         if (query) {
-//           queryCache.remove(query);
-//         }
-//       }
-//     });
-//   };
 }

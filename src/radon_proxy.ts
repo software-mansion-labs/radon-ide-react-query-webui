@@ -19,13 +19,12 @@ class RNIDEProxyClient implements ProxyClient {
   }
 
   private handleMessage = (event: MessageEvent) => {
-   console.log("RADON PROXY CLIENT", event);
     const message = event.data;
     if (message.scope === this.scope) {
       const payload = message.data;
       this.listeners
         .get(payload.type)
-        ?.forEach((listener) => listener(message.data.data));
+        ?.forEach((listener) => listener(payload.data));
     }
   };
 
