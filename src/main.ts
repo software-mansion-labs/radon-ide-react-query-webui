@@ -1,4 +1,3 @@
-import './style.css'
 import { QueryClient } from '@tanstack/query-core'
 import { TanstackQueryDevtoolsPanel } from '@tanstack/query-devtools'
 import { broadcastQueryClient } from './broadcast.ts'
