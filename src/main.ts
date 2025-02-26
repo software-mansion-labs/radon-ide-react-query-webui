@@ -11,4 +11,4 @@ const devtools = new TanstackQueryDevtoolsPanel({
 
 devtools.mount(document.querySelector<HTMLElement>('#app')!);
 
-broadcastQueryClient('RNIDE-react-query-devtools', queryClient);
+broadcastQueryClient('react-query', queryClient);
