@@ -1,9 +1,11 @@
+import * as flatted from "flatted";
+
 export interface ProxyClient {
-   sendMessage: (type: string, data?: any) => void;
-   addMessageListener: (method: string, listener: (params: any) => void) => void;
- }
- 
- export type ProxyClientFactory = () => Promise<ProxyClient>;
+  sendMessage: (type: string, data?: any) => void;
+  addMessageListener: (method: string, listener: (params: any) => void) => void;
+}
+
+export type ProxyClientFactory = () => Promise<ProxyClient>;
 
 // @ts-ignore
 const vscode = acquireVsCodeApi();
@@ -24,7 +26,7 @@ class RNIDEProxyClient implements ProxyClient {
       const payload = message.data;
       this.listeners
         .get(payload.type)
-        ?.forEach((listener) => listener(payload.data));
+        ?.forEach((listener) => listener(flatted.parse(payload.data)));
     }
   };
 
@@ -48,4 +50,5 @@ class RNIDEProxyClient implements ProxyClient {
   };
 }
 
-export const createRNIDEProxyClient = (scope: string) => new RNIDEProxyClient(scope);
+export const createRNIDEProxyClient = (scope: string) =>
+  new RNIDEProxyClient(scope);
